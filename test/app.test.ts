@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildApp } from '../src/app';
-const x: number = "故意型別錯誤";
+  const x: number = "故意型別錯誤";
 describe('Fastify app', () => {
   it('GET /health returns ok status', async () => {
     const app = buildApp({ logger: false });
