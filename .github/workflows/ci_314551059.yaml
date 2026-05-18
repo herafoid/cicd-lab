@@ -42,5 +42,5 @@ jobs:
         if: success() || failure() # 確保測試失敗也能產出報告
         with:
           name: Vitest Tests
-          path: test-report.xml     # 讀取剛剛產出的 xml
-          reporter: jest-junit      # dorny 依然用這個名稱來解析標準 JUnit 格式
+          path: test-report.xml # 讀取剛剛產出的 xml
+          reporter: jest-junit # dorny 依然用這個名稱來解析標準 JUnit 格式
