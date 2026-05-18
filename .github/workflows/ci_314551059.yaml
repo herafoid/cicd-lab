@@ -6,8 +6,8 @@ on:
 
 permissions:
   contents: read
-  checks: write # ← 這行是關鍵，允許寫入 Check Runs
-  pull-requests: write # ← 如果要在 PR 顯示留言也需要這行
+  checks: write
+  pull-requests: write
 
 jobs:
   ci:
@@ -28,13 +28,51 @@ jobs:
         run: npm ci
 
       - name: TypeScript typecheck
+        id: typecheck
         run: npm run typecheck
+        continue-on-error: true
 
       - name: Prettier check
+        id: prettier
         run: npm run format:check
+        continue-on-error: true
 
       - name: Run tests
+        id: tests
         run: npm test -- --reporter=junit --outputFile=test-results/results.xml
+        continue-on-error: true
+
+      - name: Write job summary
+        if: always()
+        run: |
+          echo "## CI 檢查結果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 檢查項目 | 結果 |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|------|" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.typecheck.outcome }}" == "success" ]; then
+            echo "| TypeScript typecheck | ✅ 通過 |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| TypeScript typecheck | ❌ 失敗 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ steps.prettier.outcome }}" == "success" ]; then
+            echo "| Prettier check | ✅ 通過 |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Prettier check | ❌ 失敗 |" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ "${{ steps.tests.outcome }}" == "success" ]; then
+            echo "| Test | ✅ 通過 |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Test | ❌ 失敗 |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Fail if any check failed
+        if: always()
+        run: |
+          if [ "${{ steps.typecheck.outcome }}" == "failure" ] || \
+             [ "${{ steps.prettier.outcome }}" == "failure" ] || \
+             [ "${{ steps.tests.outcome }}" == "failure" ]; then
+            exit 1
+          fi
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
