@@ -1,10 +1,13 @@
-name: CI Pipeline - S1234567
+name: CI Pipeline - 314551059
 
 on:
   push:
-    branches: ['**'] # 任何 branch push 都觸發
-  pull_request:
-    branches: ['**']
+    branches: ["**"]
+
+permissions:
+  contents: read
+  checks: write        # ← 這行是關鍵，允許寫入 Check Runs
+  pull-requests: write # ← 如果要在 PR 顯示留言也需要這行
 
 jobs:
   ci:
@@ -12,41 +15,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 取得程式碼
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. 設定 Node.js 環境
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
-      # 3. 安裝依賴套件
       - name: Install dependencies
         run: npm ci
 
-      # 4. TypeScript 型別檢查
       - name: TypeScript typecheck
         run: npm run typecheck
 
-      # 5. Prettier 格式檢查
       - name: Prettier check
         run: npm run format:check
-        # 如果專案用的是 "format" 指令，可改成：
-        # run: npx prettier --check .
 
-      # 6. 執行測試，並產生 JUnit XML 報告
       - name: Run tests
         run: npm test -- --reporter=junit --outputFile=test-results/results.xml
-        # 若測試框架是 vitest，指令如上
-        # 若是 jest 則改成：
-        # run: npm test -- --reporters=jest-junit
 
-      # 7. 將測試結果顯示在 GitHub Actions 頁面 ⭐
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always() # 即使測試失敗也要上傳結果
+        if: always()
         with:
           files: test-results/results.xml
