@@ -2,11 +2,11 @@ name: CI Pipeline - 314551059
 
 on:
   push:
-    branches: ["**"]
+    branches: ['**']
 
 permissions:
   contents: read
-  checks: write        # ← 這行是關鍵，允許寫入 Check Runs
+  checks: write # ← 這行是關鍵，允許寫入 Check Runs
   pull-requests: write # ← 如果要在 PR 顯示留言也需要這行
 
 jobs:
@@ -21,8 +21,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
