@@ -2,9 +2,9 @@ name: CI Pipeline - S1234567
 
 on:
   push:
-    branches: ["**"]   # 任何 branch push 都觸發
+    branches: ['**'] # 任何 branch push 都觸發
   pull_request:
-    branches: ["**"]
+    branches: ['**']
 
 jobs:
   ci:
@@ -20,8 +20,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       # 3. 安裝依賴套件
       - name: Install dependencies
@@ -47,6 +47,6 @@ jobs:
       # 7. 將測試結果顯示在 GitHub Actions 頁面 ⭐
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()   # 即使測試失敗也要上傳結果
+        if: always() # 即使測試失敗也要上傳結果
         with:
           files: test-results/results.xml
