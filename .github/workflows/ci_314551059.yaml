@@ -1,6 +1,6 @@
 name: CI Pipeline
 
-# 設定在 push 時自動執行 [cite: 7]
+# 設定在 push 時自動執行
 on:
   push:
     branches: ['main', 'master']
@@ -8,6 +8,11 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    # 關鍵：授權給套件，讓它有權限在 GitHub 頁面上留下測試報告
+    permissions:
+      checks: write
+      contents: read
 
     steps:
       # 1. 取得專案程式碼
@@ -18,29 +23,29 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # 可依專案需求調整版本
+          node-version: '18'
 
       # 3. 安裝依賴套件
       - name: Install dependencies
         run: npm install
 
-      # 4. 執行 Prettier 檢查 [cite: 10]
+      # 4. 執行 Prettier 檢查
       - name: Prettier check
         run: npx prettier --check .
 
-      # 5. 執行 TypeScript typecheck [cite: 9]
+      # 5. 執行 TypeScript typecheck
       - name: TypeScript typecheck
         run: npx tsc --noEmit
 
-      # 6. 執行測試並產出報告 (修正為 Vitest 專用參數) [cite: 11]
+      # 6. 繞過 npm，直接用 npx vitest 執行測試並產出報告
       - name: Run Tests
-        run: npm test -- --reporter=default --reporter=junit --outputFile=./test-report.xml
+        run: npx vitest run --reporter=default --reporter=junit --outputFile=./test-report.xml
 
-      # 7. 將測試結果顯示於 GitHub actions 結果頁面 [cite: 13]
+      # 7. 將測試結果顯示於 GitHub actions 結果頁面
       - name: Publish Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure() # 確保測試失敗也能產出報告
         with:
           name: Vitest Tests
-          path: test-report.xml # 讀取剛剛產出的 xml
-          reporter: jest-junit # dorny 依然用這個名稱來解析標準 JUnit 格式
+          path: test-report.xml
+          reporter: jest-junit
