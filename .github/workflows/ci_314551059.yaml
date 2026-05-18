@@ -1,9 +1,9 @@
 name: CI Pipeline
 
-# 設定在 push 時自動執行 
+# 設定在 push 時自動執行
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ['main', 'master']
 
 jobs:
   build-and-test:
@@ -34,12 +34,12 @@ jobs:
         run: npx tsc --noEmit
 
       # 6. 執行測試並產出報告 [cite: 11]
-      # 這裡加上 --reporters 選項來產生 XML 報告，以便後續套件讀取 
+      # 這裡加上 --reporters 選項來產生 XML 報告，以便後續套件讀取
       - name: Run Tests
         run: npm test -- --reporters="default" --reporters="jest-junit"
         env:
-          JEST_JUNIT_OUTPUT_DIR: "./reports"
-          JEST_JUNIT_OUTPUT_NAME: "test-report.xml"
+          JEST_JUNIT_OUTPUT_DIR: './reports'
+          JEST_JUNIT_OUTPUT_NAME: 'test-report.xml'
 
       # 7. 將測試結果顯示於 GitHub actions 結果頁面 [cite: 13, 14, 15]
       - name: Publish Test Report
