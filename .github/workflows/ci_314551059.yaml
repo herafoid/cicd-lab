@@ -73,9 +73,3 @@ jobs:
              [ "${{ steps.tests.outcome }}" == "failure" ]; then
             exit 1
           fi
-
-      - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: test-results/results.xml
